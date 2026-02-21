@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block title %}{{ server.name }}{% endblock %}
+
+{% block extra_css %}
+    .detail-header {
+        padding: 40px 0 24px;
+        border-bottom: 1px solid #1e1b4b;
+        margin-bottom: 32px;
+    }
+    .detail-header h1 { font-size: 32px; margin-bottom: 8px; }
+    .detail-meta {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        color: #8b85b1;
+        font-size: 14px;
+        flex-wrap: wrap;
+    }
+    .detail-meta .transport {
+        background: #064e3b;
+        color: #6ee7b7;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .detail-body {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 32px;
+        padding-bottom: 40px;
+    }
+    @media (max-width: 768px) {
+        .detail-body { grid-template-columns: 1fr; }
+    }
+    .detail-desc { font-size: 16px; line-height: 1.7; color: #c7d2fe; margin-bottom: 24px; }
+
+    .section-title { font-size: 14px; font-weight: 600; color: #6b6490; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+    .tools-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+    }
+    .tool-chip {
+        background: #1e1b4b;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-family: 'SF Mono', monospace;
+        font-size: 13px;
+        color: #a5b4fc;
+    }
+
+    .install-box {
+        background: #111128;
+        border: 1px solid #2d2654;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 24px;
+        position: relative;
+    }
+    .install-box code {
+        font-family: 'SF Mono', monospace;
+        font-size: 13px;
+        color: #34d399;
+        word-break: break-all;
+    }
+    .copy-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #312e81;
+        color: #a5b4fc;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+    }
+    .copy-btn:hover { background: #4338ca; }
+
+    .sidebar-card {
+        background: #111128;
+        border: 1px solid #1e1b4b;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    .sidebar-card h3 { font-size: 15px; margin-bottom: 12px; color: #a5b4fc; }
+    .sidebar-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 14px;
+        color: #8b85b1;
+        border-bottom: 1px solid #1e1b4b;
+    }
+    .sidebar-row:last-child { border-bottom: none; }
+    .sidebar-row .label { color: #6b6490; }
+
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .tag-item {
+        background: #1e1b4b;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #8b85b1;
+    }
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="detail-header">
+        <h1>{{ server.name }}</h1>
+        <div class="detail-meta">
+            <span>by {{ server.author or 'Unknown' }}</span>
+            {% if server.version %}<span>v{{ server.version }}</span>{% endif %}
+            <span class="transport">{{ server.transport_type or 'stdio' }}</span>
+            {% if server.repo_url %}
+            <a href="{{ server.repo_url }}" target="_blank">View Source &rarr;</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-body">
+        <div class="detail-main">
+            <div class="detail-desc">{{ server.description }}</div>
+
+            {% if server.install_command %}
+            <div class="section-title">Install</div>
+            <div class="install-box">
+                <code id="installCmd">{{ server.install_command }}</code>
+                <button class="copy-btn" onclick="copyInstall()">Copy</button>
+            </div>
+            {% endif %}
+
+            {% if server.capabilities and server.capabilities.get('tools') %}
+            <div class="section-title">Tools</div>
+            <div class="tools-list">
+                {% for tool in server.capabilities.get('tools', []) %}
+                <span class="tool-chip">{{ tool }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if server.capabilities and server.capabilities.get('resources') %}
+            <div class="section-title">Resources</div>
+            <div class="tools-list">
+                {% for res in server.capabilities.get('resources', []) %}
+                <span class="tool-chip">{{ res }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if server.capabilities and server.capabilities.get('prompts') %}
+            <div class="section-title">Prompts</div>
+            <div class="tools-list">
+                {% for p in server.capabilities.get('prompts', []) %}
+                <span class="tool-chip">{{ p }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="detail-sidebar">
+            <div class="sidebar-card">
+                <h3>Details</h3>
+                <div class="sidebar-row">
+                    <span class="label">Transport</span>
+                    <span>{{ server.transport_type or 'stdio' }}</span>
+                </div>
+                <div class="sidebar-row">
+                    <span class="label">Author</span>
+                    <span>{{ server.author or 'Unknown' }}</span>
+                </div>
+                <div class="sidebar-row">
+                    <span class="label">Version</span>
+                    <span>{{ server.version or '-' }}</span>
+                </div>
+            </div>
+
+            {% if server.categories %}
+            <div class="sidebar-card">
+                <h3>Categories</h3>
+                <div class="tag-list">
+                    {% for cat in server.categories.split(',') %}
+                    {% if cat.strip() %}
+                    <a href="/browse?category={{ cat.strip() }}" class="tag-item">{{ cat.strip() }}</a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if server.tags %}
+            <div class="sidebar-card">
+                <h3>Tags</h3>
+                <div class="tag-list">
+                    {% for tag in server.tags.split(',') %}
+                    {% if tag.strip() %}
+                    <span class="tag-item">{{ tag.strip() }}</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="sidebar-card">
+                <h3>API Access</h3>
+                <div class="install-box" style="margin-bottom:0;">
+                    <code style="font-size:11px; color:#fbbf24;">GET /api/v1/servers/{{ server.id }}</code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyInstall() {
+    const cmd = document.getElementById('installCmd').textContent;
+    navigator.clipboard.writeText(cmd).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+}
+</script>
+{% endblock %}

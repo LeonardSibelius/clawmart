@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}API Docs{% endblock %}
+
+{% block extra_css %}
+    .docs-page { max-width: 850px; margin: 0 auto; padding: 40px 32px; }
+    .docs-page h1 { font-size: 32px; margin-bottom: 8px; }
+    .docs-page .intro { color: #8b85b1; margin-bottom: 40px; font-size: 16px; line-height: 1.6; }
+
+    .endpoint {
+        background: #111128;
+        border: 1px solid #1e1b4b;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    .endpoint-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .method {
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 700;
+        font-family: monospace;
+    }
+    .method-get { background: #064e3b; color: #6ee7b7; }
+    .method-post { background: #312e81; color: #a5b4fc; }
+    .endpoint-path {
+        font-family: 'SF Mono', monospace;
+        font-size: 15px;
+        color: #fbbf24;
+    }
+    .endpoint-desc { color: #8b85b1; font-size: 14px; margin-bottom: 16px; line-height: 1.5; }
+
+    .params-title { font-size: 13px; font-weight: 600; color: #6b6490; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .params-table { width: 100%; font-size: 13px; margin-bottom: 16px; }
+    .params-table th { text-align: left; color: #6b6490; padding: 6px 0; border-bottom: 1px solid #1e1b4b; }
+    .params-table td { padding: 6px 0; border-bottom: 1px solid #0f0a2e; color: #c7d2fe; }
+    .params-table .param-name { font-family: monospace; color: #a5b4fc; }
+    .params-table .param-type { color: #f472b6; font-size: 12px; }
+
+    .example-title { font-size: 13px; font-weight: 600; color: #6b6490; margin-bottom: 8px; }
+    .code-block {
+        background: #0a0a1a;
+        border: 1px solid #1e1b4b;
+        border-radius: 8px;
+        padding: 16px;
+        font-family: 'SF Mono', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        overflow-x: auto;
+        color: #c7d2fe;
+        margin-bottom: 12px;
+    }
+    .code-block .comment { color: #4a4570; }
+    .code-block .string { color: #34d399; }
+    .code-block .key { color: #fbbf24; }
+    .code-block .num { color: #f472b6; }
+
+    .base-url-box {
+        background: #1e1b4b;
+        border-radius: 8px;
+        padding: 14px 20px;
+        font-family: monospace;
+        font-size: 14px;
+        color: #fbbf24;
+        margin-bottom: 32px;
+    }
+    .note { background: #1e1b4b; border-radius: 8px; padding: 14px 20px; color: #a5b4fc; font-size: 14px; margin-bottom: 24px; }
+{% endblock %}
+
+{% block content %}
+<div class="docs-page">
+    <h1>API Documentation</h1>
+    <p class="intro">ClawMart's API is designed for AI agents. No authentication required for read endpoints. All responses are JSON with a consistent schema.</p>
+
+    <div class="base-url-box">
+        Base URL: https://clawmart-ai.com
+    </div>
+
+    <div class="note">
+        All read endpoints are open &mdash; no API key, no tokens, no sign-up. Just send requests and get JSON back.
+    </div>
+
+    <!-- GET /api/v1/servers -->
+    <div class="endpoint">
+        <div class="endpoint-header">
+            <span class="method method-get">GET</span>
+            <span class="endpoint-path">/api/v1/servers</span>
+        </div>
+        <div class="endpoint-desc">List and search MCP servers in the registry. Supports text search, category filtering, and tag filtering.</div>
+
+        <div class="params-title">Query Parameters</div>
+        <table class="params-table">
+            <tr><th>Name</th><th>Type</th><th>Description</th></tr>
+            <tr><td class="param-name">search</td><td class="param-type">string</td><td>Search in name, description, and tags</td></tr>
+            <tr><td class="param-name">category</td><td class="param-type">string</td><td>Filter by category (e.g. "Developer Tools")</td></tr>
+            <tr><td class="param-name">tags</td><td class="param-type">string</td><td>Comma-separated tags to filter by</td></tr>
+            <tr><td class="param-name">limit</td><td class="param-type">int</td><td>Max results (default: 50, max: 200)</td></tr>
+        </table>
+
+        <div class="example-title">Example Request</div>
+        <div class="code-block">curl https://clawmart-ai.com/api/v1/servers?search=database&limit=5</div>
+
+        <div class="example-title">Example Response</div>
+        <div class="code-block">
+{<br>
+&nbsp;&nbsp;<span class="key">"status"</span>: <span class="string">"success"</span>,<br>
+&nbsp;&nbsp;<span class="key">"data"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"servers"</span>: [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"id"</span>: <span class="num">5</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"name"</span>: <span class="string">"postgres"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"description"</span>: <span class="string">"PostgreSQL database integration..."</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"capabilities"</span>: {<span class="key">"tools"</span>: [<span class="string">"query"</span>]},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"install_command"</span>: <span class="string">"npx -y @modelcontextprotocol/server-postgres"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"total"</span>: <span class="num">1</span><br>
+&nbsp;&nbsp;}<br>
+}
+        </div>
+    </div>
+
+    <!-- GET /api/v1/servers/:id -->
+    <div class="endpoint">
+        <div class="endpoint-header">
+            <span class="method method-get">GET</span>
+            <span class="endpoint-path">/api/v1/servers/{id}</span>
+        </div>
+        <div class="endpoint-desc">Get full details for a single MCP server by its ID.</div>
+
+        <div class="example-title">Example</div>
+        <div class="code-block">curl https://clawmart-ai.com/api/v1/servers/1</div>
+    </div>
+
+    <!-- POST /api/v1/discover -->
+    <div class="endpoint">
+        <div class="endpoint-header">
+            <span class="method method-post">POST</span>
+            <span class="endpoint-path">/api/v1/discover</span>
+        </div>
+        <div class="endpoint-desc">
+            <strong>The killer feature.</strong> Describe what you need in plain English and ClawMart uses Claude to find the most relevant MCP servers. Perfect for agents that know what they need but not which server provides it.
+        </div>
+
+        <div class="params-title">Request Body (JSON)</div>
+        <table class="params-table">
+            <tr><th>Name</th><th>Type</th><th>Description</th></tr>
+            <tr><td class="param-name">capability</td><td class="param-type">string</td><td>Natural language description of what you need (required, min 5 chars)</td></tr>
+            <tr><td class="param-name">limit</td><td class="param-type">int</td><td>Max matches (default: 5, max: 10)</td></tr>
+        </table>
+
+        <div class="example-title">Example Request</div>
+        <div class="code-block">
+curl -X POST https://clawmart-ai.com/api/v1/discover \<br>
+&nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+&nbsp;&nbsp;-d '{"capability": "I need to read and write files on the local system"}'
+        </div>
+
+        <div class="example-title">Example Response</div>
+        <div class="code-block">
+{<br>
+&nbsp;&nbsp;<span class="key">"status"</span>: <span class="string">"success"</span>,<br>
+&nbsp;&nbsp;<span class="key">"data"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"query"</span>: <span class="string">"I need to read and write files on the local system"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"matches"</span>: [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"server"</span>: {<span class="key">"id"</span>: <span class="num">1</span>, <span class="key">"name"</span>: <span class="string">"filesystem"</span>, ...},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"relevance_score"</span>: <span class="num">10</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"reason"</span>: <span class="string">"Provides read_file, write_file, and directory management tools"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"count"</span>: <span class="num">1</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="key">"metadata"</span>: {<span class="key">"powered_by"</span>: <span class="string">"Claude (Anthropic)"</span>}<br>
+}
+        </div>
+    </div>
+
+    <!-- GET /api/v1/categories -->
+    <div class="endpoint">
+        <div class="endpoint-header">
+            <span class="method method-get">GET</span>
+            <span class="endpoint-path">/api/v1/categories</span>
+        </div>
+        <div class="endpoint-desc">List all categories with the number of servers in each.</div>
+        <div class="example-title">Example</div>
+        <div class="code-block">curl https://clawmart-ai.com/api/v1/categories</div>
+    </div>
+</div>
+{% endblock %}

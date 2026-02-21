@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Browse{% endblock %}
+
+{% block extra_css %}
+    .browse-header {
+        padding: 32px 0 16px;
+    }
+    .browse-header h1 { font-size: 28px; margin-bottom: 16px; }
+    .search-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .search-input {
+        flex: 1;
+        min-width: 250px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: 1px solid #2d2654;
+        background: #111128;
+        color: #e2e0ff;
+        font-size: 14px;
+        outline: none;
+    }
+    .search-input:focus { border-color: #6366f1; }
+    .search-input::placeholder { color: #4a4570; }
+
+    .cat-pills {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+    .cat-pill {
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1px solid #2d2654;
+        background: transparent;
+        color: #8b85b1;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .cat-pill:hover, .cat-pill.active {
+        background: #6366f1;
+        color: white;
+        border-color: #6366f1;
+        text-decoration: none;
+    }
+    .cat-pill .count { opacity: 0.7; font-size: 11px; }
+
+    .server-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 16px;
+        padding-bottom: 32px;
+    }
+    .server-card {
+        background: #111128;
+        border: 1px solid #1e1b4b;
+        border-radius: 12px;
+        padding: 20px;
+        transition: border-color 0.2s;
+    }
+    .server-card:hover { border-color: #4f46e5; }
+    .server-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+    }
+    .server-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #e2e0ff;
+    }
+    .server-name a { color: #e2e0ff; }
+    .server-name a:hover { color: #a5b4fc; }
+    .server-author { font-size: 12px; color: #6b6490; margin-bottom: 8px; }
+    .server-desc {
+        font-size: 14px;
+        color: #8b85b1;
+        line-height: 1.5;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .server-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 12px;
+    }
+    .tag {
+        background: #1e1b4b;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: #8b85b1;
+    }
+    .server-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #4a4570;
+    }
+    .transport-badge {
+        background: #064e3b;
+        color: #6ee7b7;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6b6490;
+        grid-column: 1 / -1;
+    }
+    .result-count { color: #6b6490; font-size: 14px; margin-bottom: 16px; }
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="browse-header">
+        <h1>Browse MCP Servers</h1>
+        <form class="search-row" method="GET" action="/browse">
+            <input type="text" name="search" class="search-input"
+                   placeholder="Search servers by name, description, or tags..."
+                   value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if query or current_category %}
+            <a href="/browse" class="btn btn-ghost">Clear</a>
+            {% endif %}
+        </form>
+
+        <div class="cat-pills">
+            <a href="/browse" class="cat-pill {% if not current_category %}active{% endif %}">All</a>
+            {% for cat_name, count in categories %}
+            <a href="/browse?category={{ cat_name }}"
+               class="cat-pill {% if current_category == cat_name %}active{% endif %}">
+                {{ cat_name }} <span class="count">({{ count }})</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="result-count">{{ servers|length }} server{{ 's' if servers|length != 1 }} found</div>
+
+    <div class="server-grid">
+        {% if servers %}
+            {% for s in servers %}
+            <div class="server-card">
+                <div class="server-card-header">
+                    <div class="server-name"><a href="/servers/{{ s.id }}">{{ s.name }}</a></div>
+                    <span class="transport-badge">{{ s.transport_type or 'stdio' }}</span>
+                </div>
+                <div class="server-author">by {{ s.author or 'Unknown' }} {% if s.version %}&middot; v{{ s.version }}{% endif %}</div>
+                <div class="server-desc">{{ s.description }}</div>
+                <div class="server-tags">
+                    {% for tag in (s.tags or '').split(',')[:5] %}
+                        {% if tag.strip() %}<span class="tag">{{ tag.strip() }}</span>{% endif %}
+                    {% endfor %}
+                </div>
+                <div class="server-footer">
+                    <span>{{ (s.categories or '').split(',')[0] }}</span>
+                    <a href="/servers/{{ s.id }}" class="btn btn-sm btn-ghost">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p style="font-size:36px; margin-bottom:12px;">&#128269;</p>
+                <p style="font-size:16px;">No servers found matching your search.</p>
+                <p style="margin-top:8px;"><a href="/browse">Browse all servers</a></p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

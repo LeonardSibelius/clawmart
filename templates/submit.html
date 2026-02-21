@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Submit Server{% endblock %}
+
+{% block extra_css %}
+    .submit-page { max-width: 700px; margin: 0 auto; padding: 40px 32px; }
+    .submit-page h1 { font-size: 28px; margin-bottom: 8px; }
+    .submit-page .subtitle { color: #8b85b1; margin-bottom: 32px; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #a5b4fc;
+        margin-bottom: 6px;
+    }
+    .form-group .hint { font-size: 12px; color: #6b6490; margin-bottom: 6px; }
+    .form-input {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid #2d2654;
+        background: #111128;
+        color: #e2e0ff;
+        font-size: 14px;
+        outline: none;
+        font-family: inherit;
+    }
+    .form-input:focus { border-color: #6366f1; }
+    textarea.form-input { min-height: 100px; resize: vertical; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+    .success-msg {
+        background: #064e3b;
+        border: 1px solid #10b981;
+        border-radius: 8px;
+        padding: 16px;
+        color: #6ee7b7;
+        margin-bottom: 24px;
+    }
+    .error-msg {
+        background: #450a0a;
+        border: 1px solid #dc2626;
+        border-radius: 8px;
+        padding: 16px;
+        color: #fca5a5;
+        margin-bottom: 24px;
+    }
+{% endblock %}
+
+{% block content %}
+<div class="submit-page">
+    <h1>Submit an MCP Server</h1>
+    <p class="subtitle">Know an MCP server that should be in the registry? Submit it here. Submissions are reviewed before appearing publicly.</p>
+
+    {% if success %}
+    <div class="success-msg">Your server has been submitted for review. It will appear in the registry once approved.</div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/submit">
+        <div class="form-group">
+            <label>Server Name *</label>
+            <input type="text" name="name" class="form-input" placeholder="e.g. my-mcp-server" value="{{ data.get('name', '') }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" class="form-input" placeholder="What does this server do?">{{ data.get('description', '') }}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Version</label>
+                <input type="text" name="version" class="form-input" placeholder="e.g. 1.0.0" value="{{ data.get('version', '') }}">
+            </div>
+            <div class="form-group">
+                <label>Author</label>
+                <input type="text" name="author" class="form-input" placeholder="Who made it?" value="{{ data.get('author', '') }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Repository URL</label>
+            <input type="url" name="repo_url" class="form-input" placeholder="https://github.com/..." value="{{ data.get('repo_url', '') }}">
+        </div>
+
+        <div class="form-group">
+            <label>Install Command</label>
+            <div class="hint">How do you install/run it?</div>
+            <input type="text" name="install_command" class="form-input" placeholder="npx -y @scope/server-name" value="{{ data.get('install_command', '') }}">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Transport Type</label>
+                <select name="transport_type" class="form-input">
+                    <option value="stdio" {% if data.get('transport_type') == 'stdio' %}selected{% endif %}>stdio</option>
+                    <option value="sse" {% if data.get('transport_type') == 'sse' %}selected{% endif %}>SSE</option>
+                    <option value="streamable-http" {% if data.get('transport_type') == 'streamable-http' %}selected{% endif %}>Streamable HTTP</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Categories</label>
+                <div class="hint">Comma-separated</div>
+                <input type="text" name="categories" class="form-input" placeholder="Developer Tools, AI & ML" value="{{ data.get('categories', '') }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Tags</label>
+            <div class="hint">Comma-separated keywords</div>
+            <input type="text" name="tags" class="form-input" placeholder="database, sql, query" value="{{ data.get('tags', '') }}">
+        </div>
+
+        <div class="form-group">
+            <label>Capabilities (JSON)</label>
+            <div class="hint">Optional. List tools, resources, and prompts.</div>
+            <textarea name="capabilities" class="form-input" placeholder='{"tools": ["tool1", "tool2"], "resources": ["res1"]}'>{{ data.get('capabilities', '') }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top:8px;">Submit for Review</button>
+    </form>
+</div>
+{% endblock %}

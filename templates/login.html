@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Admin Login{% endblock %}
+
+{% block extra_css %}
+    .login-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+        padding: 40px 20px;
+    }
+    .login-box {
+        background: #111128;
+        border: 1px solid #2d2654;
+        border-radius: 12px;
+        padding: 40px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+    .login-box h2 { margin-bottom: 8px; }
+    .login-box .subtitle { color: #8b85b1; margin-bottom: 24px; font-size: 14px; }
+    .login-input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #2d2654;
+        background: #0a0a1a;
+        color: #e2e0ff;
+        font-size: 15px;
+        outline: none;
+        margin-bottom: 16px;
+        text-align: center;
+    }
+    .login-input:focus { border-color: #6366f1; }
+    .login-error { color: #f87171; font-size: 14px; margin-bottom: 12px; }
+{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-box">
+        <div style="font-size:36px; margin-bottom:12px;">&#129430;</div>
+        <h2>Admin Access</h2>
+        <p class="subtitle">ClawMart Registry Management</p>
+        {% if error %}
+        <div class="login-error">{{ error }}</div>
+        {% endif %}
+        <form method="POST" action="/login">
+            <input type="password" name="password" class="login-input" placeholder="Password" autofocus>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

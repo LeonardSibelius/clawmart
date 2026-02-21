@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+    .admin-page { padding: 32px 0; }
+    .admin-page h1 { font-size: 28px; margin-bottom: 24px; }
+
+    .admin-stats {
+        display: flex;
+        gap: 0;
+        margin-bottom: 32px;
+    }
+    .admin-stat {
+        flex: 1;
+        background: #111128;
+        border: 1px solid #1e1b4b;
+        padding: 16px 20px;
+        text-align: center;
+    }
+    .admin-stat:first-child { border-radius: 10px 0 0 10px; }
+    .admin-stat:last-child { border-radius: 0 10px 10px 0; }
+    .admin-stat:not(:last-child) { border-right: none; }
+    .admin-stat .num { font-size: 28px; font-weight: 700; color: #6366f1; }
+    .admin-stat .label { font-size: 12px; color: #6b6490; margin-top: 2px; }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #1e1b4b;
+    }
+
+    .sub-card {
+        background: #111128;
+        border: 1px solid #1e1b4b;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 12px;
+    }
+    .sub-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+    }
+    .sub-name { font-size: 18px; font-weight: 600; }
+    .sub-date { font-size: 12px; color: #6b6490; }
+    .sub-desc { font-size: 14px; color: #8b85b1; margin-bottom: 12px; line-height: 1.5; }
+    .sub-meta { font-size: 13px; color: #6b6490; margin-bottom: 12px; }
+    .sub-actions { display: flex; gap: 8px; }
+
+    .empty-pending {
+        text-align: center;
+        padding: 40px;
+        color: #6b6490;
+        background: #111128;
+        border-radius: 10px;
+        border: 1px solid #1e1b4b;
+    }
+{% endblock %}
+
+{% block content %}
+<div class="container admin-page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <h1>Admin Dashboard</h1>
+        <a href="/logout" class="btn btn-ghost btn-sm">Logout</a>
+    </div>
+
+    <div class="admin-stats">
+        <div class="admin-stat">
+            <div class="num">{{ stats.total_servers }}</div>
+            <div class="label">Servers</div>
+        </div>
+        <div class="admin-stat">
+            <div class="num">{{ stats.pending_submissions }}</div>
+            <div class="label">Pending</div>
+        </div>
+        <div class="admin-stat">
+            <div class="num">{{ api_stats.total_api_calls }}</div>
+            <div class="label">API Calls</div>
+        </div>
+        <div class="admin-stat">
+            <div class="num">{{ api_stats.discover_calls }}</div>
+            <div class="label">Discover Calls</div>
+        </div>
+    </div>
+
+    <div class="section-title">Pending Submissions ({{ pending|length }})</div>
+
+    {% if pending %}
+        {% for sub in pending %}
+        <div class="sub-card">
+            <div class="sub-card-header">
+                <div class="sub-name">{{ sub.name }}</div>
+                <div class="sub-date">{{ sub.submitted_at[:10] if sub.submitted_at else '' }}</div>
+            </div>
+            <div class="sub-desc">{{ sub.description or 'No description' }}</div>
+            <div class="sub-meta">
+                Author: {{ sub.author or 'Unknown' }}
+                &middot; Transport: {{ sub.transport_type or 'stdio' }}
+                {% if sub.repo_url %}&middot; <a href="{{ sub.repo_url }}" target="_blank">Repo</a>{% endif %}
+                {% if sub.categories %}&middot; {{ sub.categories }}{% endif %}
+            </div>
+            <div class="sub-actions">
+                <form method="POST" action="/admin/approve/{{ sub.id }}" style="display:inline;">
+                    <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                </form>
+                <form method="POST" action="/admin/reject/{{ sub.id }}" style="display:inline;">
+                    <input type="hidden" name="reason" value="Does not meet quality standards">
+                    <button type="submit" class="btn btn-ghost btn-sm" style="color:#f87171; border-color:#450a0a;">Reject</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-pending">
+            <p>No pending submissions. All caught up!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

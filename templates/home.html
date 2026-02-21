@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+    .hero {
+        text-align: center;
+        padding: 80px 32px 50px;
+        background: radial-gradient(ellipse at center top, #1e1b4b 0%, #0a0a1a 70%);
+    }
+    .hero h1 { font-size: 48px; margin-bottom: 16px; line-height: 1.1; }
+    .hero h1 span { color: #6366f1; }
+    .hero .tagline { font-size: 20px; color: #8b85b1; margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-actions .btn { font-size: 16px; padding: 12px 28px; }
+
+    .stats-row {
+        display: flex;
+        justify-content: center;
+        gap: 48px;
+        padding: 40px 32px;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 36px; font-weight: 700; color: #6366f1; }
+    .stat-label { font-size: 14px; color: #6b6490; margin-top: 4px; }
+
+    .api-demo {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 32px;
+    }
+    .api-demo h2 { font-size: 24px; margin-bottom: 8px; text-align: center; }
+    .api-demo .subtitle { color: #8b85b1; text-align: center; margin-bottom: 24px; }
+    .code-block {
+        background: #111128;
+        border: 1px solid #2d2654;
+        border-radius: 10px;
+        padding: 20px;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        overflow-x: auto;
+        color: #c7d2fe;
+        margin-bottom: 16px;
+    }
+    .code-block .comment { color: #4a4570; }
+    .code-block .keyword { color: #f472b6; }
+    .code-block .string { color: #34d399; }
+    .code-block .url { color: #fbbf24; }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 32px;
+    }
+    .feature-card {
+        background: #111128;
+        border: 1px solid #1e1b4b;
+        border-radius: 10px;
+        padding: 24px;
+    }
+    .feature-card h3 { font-size: 16px; margin-bottom: 8px; color: #a5b4fc; }
+    .feature-card p { font-size: 14px; color: #8b85b1; line-height: 1.5; }
+{% endblock %}
+
+{% block content %}
+    <div class="hero">
+        <h1>MCP Servers for <span>Agents</span></h1>
+        <p class="tagline">The API-first registry where AI agents discover the tools they need. Search by name, filter by category, or describe what you need in plain English.</p>
+        <div class="hero-actions">
+            <a href="/browse" class="btn btn-primary">Browse Registry</a>
+            <a href="/docs" class="btn btn-secondary">API Documentation</a>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat">
+            <div class="stat-num">{{ stats.total_servers }}</div>
+            <div class="stat-label">MCP Servers</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">7</div>
+            <div class="stat-label">Categories</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">{{ api_stats.total_api_calls }}</div>
+            <div class="stat-label">API Calls</div>
+        </div>
+    </div>
+
+    <div class="api-demo">
+        <h2>Agent-Ready API</h2>
+        <p class="subtitle">No auth required. JSON in, JSON out. Built for machines.</p>
+
+        <div class="code-block">
+            <span class="comment"># List all servers</span><br>
+            <span class="keyword">GET</span> <span class="url">https://clawmart-ai.com/api/v1/servers</span><br><br>
+            <span class="comment"># Search by keyword</span><br>
+            <span class="keyword">GET</span> <span class="url">https://clawmart-ai.com/api/v1/servers?search=database</span><br><br>
+            <span class="comment"># AI-powered discovery (the killer feature)</span><br>
+            <span class="keyword">POST</span> <span class="url">https://clawmart-ai.com/api/v1/discover</span><br>
+            {<span class="string">"capability"</span>: <span class="string">"I need to read and write files on the local system"</span>}
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <h3>No Auth Required</h3>
+            <p>Read endpoints are fully open. Agents can query the registry without API keys, tokens, or sign-ups.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Claude-Powered Discovery</h3>
+            <p>Describe what you need in plain English. Claude matches your request to the right MCP servers instantly.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Machine-Readable</h3>
+            <p>Every response is clean JSON with consistent schema. Capabilities, tools, and install commands included.</p>
+        </div>
+    </div>
+{% endblock %}
