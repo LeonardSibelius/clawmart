@@ -96,11 +96,11 @@
 
         <div class="code-block">
             <span class="comment"># List all servers</span><br>
-            <span class="keyword">GET</span> <span class="url">https://clawmart-ai.com/api/v1/servers</span><br><br>
+            <span class="keyword">GET</span> <span class="url">{{ request.url_root.rstrip('/') }}/api/v1/servers</span><br><br>
             <span class="comment"># Search by keyword</span><br>
-            <span class="keyword">GET</span> <span class="url">https://clawmart-ai.com/api/v1/servers?search=database</span><br><br>
+            <span class="keyword">GET</span> <span class="url">{{ request.url_root.rstrip('/') }}/api/v1/servers?search=database</span><br><br>
             <span class="comment"># AI-powered discovery (the killer feature)</span><br>
-            <span class="keyword">POST</span> <span class="url">https://clawmart-ai.com/api/v1/discover</span><br>
+            <span class="keyword">POST</span> <span class="url">{{ request.url_root.rstrip('/') }}/api/v1/discover</span><br>
             {<span class="string">"capability"</span>: <span class="string">"I need to read and write files on the local system"</span>}
         </div>
     </div>

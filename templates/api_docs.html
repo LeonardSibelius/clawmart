@@ -78,7 +78,7 @@
     <p class="intro">ClawMart's API is designed for AI agents. No authentication required for read endpoints. All responses are JSON with a consistent schema.</p>
 
     <div class="base-url-box">
-        Base URL: https://clawmart-ai.com
+        Base URL: {{ request.url_root.rstrip('/') }}
     </div>
 
     <div class="note">
@@ -103,7 +103,7 @@
         </table>
 
         <div class="example-title">Example Request</div>
-        <div class="code-block">curl https://clawmart-ai.com/api/v1/servers?search=database&limit=5</div>
+        <div class="code-block">curl {{ request.url_root.rstrip('/') }}/api/v1/servers?search=database&limit=5</div>
 
         <div class="example-title">Example Response</div>
         <div class="code-block">
@@ -132,7 +132,7 @@
         <div class="endpoint-desc">Get full details for a single MCP server by its ID.</div>
 
         <div class="example-title">Example</div>
-        <div class="code-block">curl https://clawmart-ai.com/api/v1/servers/1</div>
+        <div class="code-block">curl {{ request.url_root.rstrip('/') }}/api/v1/servers/1</div>
     </div>
 
     <!-- POST /api/v1/discover -->
@@ -154,7 +154,7 @@
 
         <div class="example-title">Example Request</div>
         <div class="code-block">
-curl -X POST https://clawmart-ai.com/api/v1/discover \<br>
+curl -X POST {{ request.url_root.rstrip('/') }}/api/v1/discover \<br>
 &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
 &nbsp;&nbsp;-d '{"capability": "I need to read and write files on the local system"}'
         </div>
@@ -185,7 +185,7 @@ curl -X POST https://clawmart-ai.com/api/v1/discover \<br>
         </div>
         <div class="endpoint-desc">List all categories with the number of servers in each.</div>
         <div class="example-title">Example</div>
-        <div class="code-block">curl https://clawmart-ai.com/api/v1/categories</div>
+        <div class="code-block">curl {{ request.url_root.rstrip('/') }}/api/v1/categories</div>
     </div>
 </div>
 {% endblock %}
