@@ -135,7 +135,7 @@ SEED_SERVERS = [
         'version': '0.1.0',
         'author': 'Community',
         'repo_url': 'https://github.com/executeautomation/mcp-playwright',
-        'install_command': 'npx @anthropic/mcp-playwright',
+        'install_command': 'npx @playwright/mcp@latest',
         'transport_type': 'stdio',
         'categories': 'Web & Search,Developer Tools',
         'capabilities': '{"tools": ["navigate", "screenshot", "click", "fill", "select", "evaluate"]}',
